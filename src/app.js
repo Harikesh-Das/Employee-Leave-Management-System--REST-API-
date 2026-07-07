@@ -3,9 +3,9 @@ import cors from 'cors';
 import helmet from 'helmet';
 import morgan from 'morgan';
 import rateLimit from 'express-rate-limit';
-
 import errorHandler from './middlewares/errorHandler.js';
 import notFound from './middlewares/notFound.js';
+import userRoutes from './routes/index.js';
 
 const app = express();
 
@@ -22,7 +22,9 @@ const limiter = rateLimit({
 });
 app.use('/api', limiter);
 
-app.use(errorHandler);
+app.use("/api",userRoutes);
+
 app.use(notFound);
+app.use(errorHandler);
 
 export default app;

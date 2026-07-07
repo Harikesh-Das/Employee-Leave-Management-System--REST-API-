@@ -1,5 +1,7 @@
 import db from './db.js';
 
+
+//Creating a table if it doesn't exist in the first place
 export const initializeDatabase = () => {
     const sql = `
         CREATE TABLE IF NOT EXISTS users (
@@ -21,7 +23,7 @@ export const initializeDatabase = () => {
                 console.error('Database initialization error:', err);
                 reject(err);
             } else {
-                console.log('Users table created successfully');
+                console.log('Table has been created if it does not exist.');;
                 resolve();
             }
         });
