@@ -17,6 +17,7 @@ export const initializeDatabase = () => {
         )
     `;
 
+    // Return a promise to allow async initialization handling
     return new Promise((resolve, reject) => {
         db.run(sql, (err) => {
             if (err) {

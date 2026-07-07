@@ -2,6 +2,7 @@ import { asyncHandler } from "../utils/asyncHandler.js";
 import {verifyToken} from "../utils/jwt.js";
 import { findUserById } from "../repositories/auth.repository.js";
 
+// Middleware to authenticate requests using a Bearer token
 const authenticate= asyncHandler(async (req,res,next) => {
     let token;
     if(req.headers.authorization?.startsWith('Bearer ')){

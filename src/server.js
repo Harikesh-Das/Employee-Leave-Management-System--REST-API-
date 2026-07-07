@@ -5,6 +5,7 @@ import { initializeDatabase } from "./config/dbInit.js";
 const PORT = env.port;
 
 initializeDatabase()
+    // Start the server after the database is initialized
     .then(() => {
         app.listen(PORT, () => {
             console.log(`Server running on http://localhost:${PORT}`);

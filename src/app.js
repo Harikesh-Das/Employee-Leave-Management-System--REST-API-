@@ -9,12 +9,14 @@ import userRoutes from './routes/index.js';
 
 const app = express();
 
+// Global Middleware
 app.use(helmet());
 app.use(cors());
 app.use(morgan('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+//Rate Limiting (100 req per 15 min per IP adress)
 const limiter = rateLimit({
     windowMs: 15 * 60 * 1000,
     max: 100,
@@ -22,8 +24,10 @@ const limiter = rateLimit({
 });
 app.use('/api', limiter);
 
+//All Routes
 app.use("/api",userRoutes);
 
+//Error Handling
 app.use(notFound);
 app.use(errorHandler);
 

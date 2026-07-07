@@ -7,8 +7,11 @@ import apiResponse from '../utils/apiResponse.js';
 
 const authRoutes=Router();
 
+// Register a new user
 authRoutes.post("/register",registerValidator,validateRequest,register);
+// Login an existing user
 authRoutes.post ("/login",loginValidator,validateRequest,login);
+// Get current authenticated user
 authRoutes.get("/me",authenticate,(req,res)=>{
     apiResponse.successHelp(res,200,"User fetched successfully ",req.user)
 });

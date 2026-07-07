@@ -1,5 +1,6 @@
 import { body, checkExact } from "express-validator";
 
+// Registration validation rules
 const registerValidator = [
   body("name")
     .trim()
@@ -39,6 +40,7 @@ const registerValidator = [
     .withMessage("Role must be either 'user' or 'admin'"),
 ];
 
+// Login validation rules
 const loginValidator=[
   checkExact([
 
