@@ -9,7 +9,8 @@ const db= new sqlite3.Database(env.db.file,(err)=> {
         process.exit(1);
     }
     else{
-        console.log(`Successfully connected to ${env.db.file}`)
+        console.log(`Successfully connected to ${env.db.file}`);
+        
     }
 });
 

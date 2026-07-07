@@ -1,5 +1,4 @@
 import 'dotenv/config';
-
 function required(name){
     const value= process.env[name];
     if (!value) throw new Error(`Missing env variable: ${name}`);
@@ -8,7 +7,7 @@ function required(name){
 }
 
 const env={
-    port: Number(required('PORT')) || 3000,
+    port: Number(process.env.PORT) || 3000,
     db: {
         file: required('DB_FILE')
     },
