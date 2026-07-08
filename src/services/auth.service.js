@@ -1,9 +1,11 @@
 import {findUserByEmail, createUser, findUserById, updateEmployeeId} from "../repositories/auth.repository.js";
 import { hashPassword, comparePassword } from "../utils/hash.js";
-import { signToken,verifyToken } from "../utils/jwt.js";
+import { signAccessToken, signRefreshToken, verifyToken } from "../utils/jwt.js";
+import {saveRefreshToken,findRefreshToken,deleteRefreshToken} from "../repositories/refreshToken.repository.js";
 
 
-// Registraion Service
+
+// Registration Service
 const registerUser= async ({name, email, password, department, role})=>{
     const checkExistingUser = await findUserByEmail(email);
   if (checkExistingUser) {
@@ -25,20 +27,16 @@ const registerUser= async ({name, email, password, department, role})=>{
 
  const employeeID= "EMP" + String(userID).padStart(3,"0");
 
-  const updatedUser= await updateEmployeeId(
-    userID, 
-    employeeID
-  );
+ await updateEmployeeId(
+  userID,
+  employeeID
+ )
 
   const user= await findUserById(userID);
  
-  const token=signToken({
-    id: user.id,
-    employee_id: user.employee_id,
-    role: user.role
-  });
 
-  return {user,token};
+
+  return {user};
 };
 
 
@@ -59,14 +57,75 @@ const loginUser= async ({email,password}) =>{
     throw error;
   }
 
-  const token= signToken({
+  const accessToken= signAccessToken({
     id:user.id,
     employee_id:user.employee_id,
     role:user.role,
   });
+  const refreshToken= signRefreshToken({
+    id:user.id,
+    employee_id:user.employee_id,
+    role:user.role
+ });
 
-  return {user,token};
+ const expires_at = new Date(
+    Date.now() + 7 * 24 * 60 * 60 * 1000
+).toISOString();
+
+await saveRefreshToken({
+  user_id:user.id,
+  token: refreshToken,
+  expires_at
+});
+
+  return {user, accessToken, refreshToken};
 
 }
 
-export  {registerUser,loginUser};
+
+// Refreshing user token service
+const refreshUserToken= async (refreshToken)=>{
+  const checkRefreshToken= await findRefreshToken(refreshToken);
+  if (!checkRefreshToken){
+    const error= new Error("Refresh Token not found, Unauthorized!");
+    error.statusCode=401;
+    throw error;
+  }
+  const verified_refreshToken=  await verifyToken(refreshToken);
+
+  const user=await findUserById(verified_refreshToken.id);
+  if (!user){
+    const error= new Error ("User doesn't exist!");
+    error.statusCode=401;
+    throw error;
+  }
+
+  const accessToken= signAccessToken({
+    id:user.id,
+    employee_id:user.employee_id,
+    role:user.role
+  });
+
+  return {accessToken};
+
+}
+
+//Logout Service
+const logoutUser= async (refreshToken) => {
+  const checkRefreshToken= await findRefreshToken(refreshToken);
+  if (!checkRefreshToken){
+    const error= new Error("Already logged out or invalid refresh Token");
+    error.statusCode=401;
+    throw error;
+  }
+
+  await verifyToken(refreshToken); // Verify token is valid or not expired.
+
+  await deleteRefreshToken(refreshToken);
+
+  return {
+    message: "Logged out successfully."
+  }
+}
+
+export  {registerUser,loginUser,refreshUserToken,logoutUser};

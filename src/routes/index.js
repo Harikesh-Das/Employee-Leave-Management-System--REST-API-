@@ -6,4 +6,5 @@ const router=Router();
 // Mount authentication routes under /auth
 router.use('/auth',authRoutes);
 
+
 export default router;

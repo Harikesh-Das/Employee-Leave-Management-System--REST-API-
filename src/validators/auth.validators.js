@@ -57,8 +57,30 @@ const loginValidator=[
     .withMessage("Password is required")
     .isLength({ min: 8 })
     .withMessage("Password must be at least 8 characters long"),
-  ])
+  ]) 
 
 ];
 
-export {registerValidator, loginValidator};
+  //Refresh Token Validation Rules
+  const refreshValidator = [
+    checkExact([
+        body("refresh_token")
+            .notEmpty()
+            .withMessage("Refresh token is required")
+            .isString()
+            .withMessage("Refresh token must be a string")
+    ])
+];
+
+//Logout Validation rules
+const logoutValidator=[
+  checkExact([
+    body("refresh_token")
+    .notEmpty()
+    .withMessage("Refresh token is required.")
+    .isString()
+    .withMessage("Refresh token must be a string")
+  ])
+];
+
+export {registerValidator, loginValidator, refreshValidator,logoutValidator};

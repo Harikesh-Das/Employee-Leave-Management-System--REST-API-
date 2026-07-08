@@ -2,12 +2,20 @@ import env from "../config/env.js"
 import jwt from 'jsonwebtoken';
 
 // Token Creation
-const signToken = ({ id, employee_id, role }) => {
+const signAccessToken = ({ id, employee_id, role }) => {
   const jwtKey = env.jwt_secret
   const payload = { id, employee_id, role };
   const token = jwt.sign(payload, jwtKey, { expiresIn: "1h" });
   return token;
 };
+
+//Refresh Token
+const signRefreshToken=({ id, employee_id, role })=>{
+  const jwtKey=env.jwt_secret;
+  const payload={ id, employee_id, role };
+  const token=jwt.sign(payload,jwtKey,{expiresIn:"7d"});
+  return token;
+}
 
 
 //Token Verification
@@ -19,6 +27,6 @@ const verifyToken = (token) => {
     throw error;
   }
   
-};
+}
 
-export { signToken, verifyToken };
+export { signAccessToken, signRefreshToken, verifyToken };
