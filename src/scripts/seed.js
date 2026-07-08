@@ -12,12 +12,12 @@ const seedUser = async () => {
         const passwordHash = await bcrypt.hash(password, saltRounds);
         
         const user = {
-            manager_id: 'EMP007',
+            employee_id: 'EMP002',
             name: 'raj',
-            email: 'raj@example.com',
+            email: 'raj2@example.com',
             password_hash: passwordHash,
             department: 'Engineering',
-            role: 'admin'
+            role: 'user'
         };
 
         const sql = `
@@ -25,7 +25,7 @@ const seedUser = async () => {
             VALUES (?, ?, ?, ?, ?, ?)
         `;
 
-        db.run(sql, [user.manager_id, user.name, user.email, user.password_hash, user.department, user.role], function(err) {
+        db.run(sql, [user.employee_id, user.name, user.email, user.password_hash, user.department, user.role], function(err) {
             if (err) {
                 if (err.message.includes('UNIQUE constraint failed')) {
                     console.log('User with this email or employee_id already exists.');
