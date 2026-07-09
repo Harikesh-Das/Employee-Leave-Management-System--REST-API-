@@ -1,5 +1,6 @@
 import { body, param, checkExact } from "express-validator";
 
+// Leave Application Validation Rules
 const applyLeaveValidator = [
    checkExact([
    body("leaveType")
@@ -32,6 +33,7 @@ const applyLeaveValidator = [
    ])
 ];
 
+// Cancelling Leave Validation Rules
 const cancelLeaveValidator = [
    checkExact([
 
@@ -44,10 +46,12 @@ const cancelLeaveValidator = [
    ])
 ];
 
+// Leave History Validation Rules
 const leaveHistoryValidator = [
  
 ];
 
+// Leave Review Validation Rules
 const reviewLeaveValidator = [
    param("leaveId")
       .notEmpty()

@@ -7,6 +7,7 @@ import {
   processLeaveReview
 } from '../services/leave.service.js';
 
+// Controller to handle leave application requests
 const applyLeave = asyncHandler(async (req, res) => {
   const result = await applyForLeave({
     employeeId: req.user.id,
@@ -19,6 +20,7 @@ const applyLeave = asyncHandler(async (req, res) => {
   return apiResponse.successHelp(res,201,"Leave applied successfully",result);
 });
 
+// Controller to handle leave cancellation requests
 const cancelLeave = asyncHandler(async (req, res) => {
   const leaveId = Number(req.params.leaveId);
   const employeeId = (req.user.id);
@@ -26,12 +28,14 @@ const cancelLeave = asyncHandler(async (req, res) => {
   return apiResponse.successHelp(res, 200, "Leave cancelled successfully", result);
 });
 
+// Controller to fetch leave history for an employee
 const getLeaveHistory = asyncHandler(async (req, res) => {
   const employeeId = Number(req.user.id);
   const result = await fetchLeaveHistory(employeeId);
   return apiResponse.successHelp(res, 200, "Leave history fetched successfully", result);
 });
 
+// Controller to approve a leave request
 const approveLeave = asyncHandler(async (req, res) => {
   const leaveId = Number(req.params.leaveId);
   const managerId = Number(req.user.id);
@@ -41,6 +45,7 @@ const approveLeave = asyncHandler(async (req, res) => {
   return apiResponse.successHelp(res, 200, "Leave approved successfully", result);
 });
 
+// Controller to reject a leave request
 const rejectLeave = asyncHandler(async (req, res) => {
   const leaveId = Number(req.params.leaveId);
   const managerId = Number(req.user.id);

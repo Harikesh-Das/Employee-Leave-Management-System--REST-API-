@@ -6,6 +6,7 @@ const DEFAULT_BALANCES = {
   "Earned Leave": 18,
 };
 
+// Finds an employee record by ID.
 const findEmployeeById = (employeeId) => {
   return new Promise((resolve, reject) => {
     db.get("SELECT * FROM users WHERE id = ?", [employeeId], (err, row) => {
@@ -15,6 +16,7 @@ const findEmployeeById = (employeeId) => {
   });
 };
 
+// Inserts a leave balance record if it does not already exist.
 const insertLeaveBalance = (employeeId, leaveType, totalDays) => {
   return new Promise((resolve, reject) => {
     db.run(
@@ -28,6 +30,7 @@ const insertLeaveBalance = (employeeId, leaveType, totalDays) => {
   });
 };
 
+// Retrieves the available leave balance for a given employee and leave type.
 const getLeaveBalance = (employeeId, leaveType) => {
   return new Promise((resolve, reject) => {
     db.get(
@@ -41,6 +44,7 @@ const getLeaveBalance = (employeeId, leaveType) => {
   });
 };
 
+// Calculates used leave days for a specific employee and leave type.
 const getUsedLeaveDays = (employeeId, leaveType) => {
   return new Promise((resolve, reject) => {
     db.get(
@@ -55,6 +59,7 @@ const getUsedLeaveDays = (employeeId, leaveType) => {
   });
 };
 
+// Inserts a new leave request record.
 const insertLeaveRequest = (employeeId, leaveType, startDate, endDate, totalDays, reason) => {
   return new Promise((resolve, reject) => {
     db.run(
@@ -69,6 +74,7 @@ const insertLeaveRequest = (employeeId, leaveType, startDate, endDate, totalDays
   });
 };
 
+// Retrieves a leave request by ID, including employee details.
 const findLeaveById = (leaveId) => {
   return new Promise((resolve, reject) => {
     db.get(
@@ -85,6 +91,7 @@ const findLeaveById = (leaveId) => {
   });
 };
 
+// Updates the status of a leave request and records manager action details.
 const updateLeaveStatus = (leaveId, status, managerId = null, managerComment = null) => {
   return new Promise((resolve, reject) => {
     db.run(
@@ -101,6 +108,7 @@ const updateLeaveStatus = (leaveId, status, managerId = null, managerComment = n
   });
 };
 
+// Retrieves leave history for a given employee.
 const findLeaveHistory = (employeeId) => {
   return new Promise((resolve, reject) => {
     db.all(
@@ -118,6 +126,7 @@ const findLeaveHistory = (employeeId) => {
   });
 };
 
+// Checks for overlapping leave requests for the same employee.
 const checkLeaveOverlap= (employeeId, newEndDate, newStartDate)=>{
   return new Promise((resolve, reject)=>{
     db.get(`
@@ -138,6 +147,7 @@ const checkLeaveOverlap= (employeeId, newEndDate, newStartDate)=>{
   });
 };
 
+// Checks for duplicate pending leave requests with the same period and type.
 const checkDuplicateLeave= (leaveType,startDate,endDate)=>{
   return new Promise ((resolve,reject)=>{
     db.get(`

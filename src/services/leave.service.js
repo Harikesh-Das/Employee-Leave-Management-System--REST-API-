@@ -15,15 +15,18 @@ import { findUserById } from "../repositories/auth.repository.js";
 
 const LEAVE_TYPES = ["Casual", "Sick", "Earned Leave"];
 
+// Validate that a value is a valid date string
 function isValidDate(value) {
   return !Number.isNaN(new Date(value).getTime());
 }
 
+// Normalize a date string to YYYY-MM-DD format
 // 2025-12-3111:30:00:000
 function normalizeDate(value) {
   return new Date(value).toISOString().slice(0, 10);
 }
 
+// Calculate the inclusive day count between two dates
 function getInclusiveDayCount(startDate, endDate) {
   const start = new Date(startDate);
   const end = new Date(endDate);
@@ -31,6 +34,7 @@ function getInclusiveDayCount(startDate, endDate) {
   return Math.floor(milliseconds / (1000 * 60 * 60 * 24)) + 1;
 }
 
+// Ensure the employee exists in the system
 const ensureEmployeeExists = async (employeeId) => {
   const employee = await findUserById(employeeId);
   if (!employee) {
@@ -41,6 +45,7 @@ const ensureEmployeeExists = async (employeeId) => {
   return employee;
 };
 
+// Get the leave balance summary for an employee and leave type
 const getBalanceSummary = async (employeeId, leaveType) => {
   for (const [type, totalDays] of Object.entries(DEFAULT_BALANCES)) {
     await insertLeaveBalance(employeeId, type, totalDays);
@@ -59,7 +64,7 @@ const getBalanceSummary = async (employeeId, leaveType) => {
   };
 };
 
-// Employee Apply for leave
+// Apply for a new leave request
 const applyForLeave = async ({employeeId,leaveType,startDate,endDate,reason }) => {
   if ( !leaveType || !startDate || !endDate) {
     const error = new Error(" leaveType, startDate and endDate are required");
@@ -131,8 +136,7 @@ const applyForLeave = async ({employeeId,leaveType,startDate,endDate,reason }) =
   return { data, balance: updatedBalance };
 };
 
-
-// Employee cancels applied leave
+// Cancel an employee's pending leave request
 const cancelEmployeeLeave = async (leaveId, employeeId) => {
   if (!leaveId || !employeeId) {
     const error = new Error("leaveId and authenticated employee are required");
@@ -164,7 +168,7 @@ const cancelEmployeeLeave = async (leaveId, employeeId) => {
   return await findLeaveById(leaveId);
 };
 
-// View leave history
+// Fetch leave history and balance summary for an employee
 const fetchLeaveHistory = async (employeeId) => {
   if (!employeeId) {
     const error = new Error("Valid employeeId is required");
@@ -185,8 +189,7 @@ const fetchLeaveHistory = async (employeeId) => {
   return { leaves, balances };
 };
 
-
-// Review Leave
+// Process a manager review for a leave request
 const processLeaveReview = async (leaveId, managerId, managerComment, nextStatus) => {
   if (!leaveId) {
     const error = new Error("leaveId params in body are required");

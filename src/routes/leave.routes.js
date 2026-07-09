@@ -17,10 +17,15 @@ import {
 
 const leaveRoutes = express.Router();
 
+// Apply for leave
 leaveRoutes.post("/apply", authenticate,applyLeaveValidator, validateRequest, applyLeave);
+// Cancel leave request
 leaveRoutes.patch("/:leaveId/cancel", authenticate,cancelLeaveValidator, validateRequest, cancelLeave);
+// Get leave history
 leaveRoutes.get("/history", authenticate, leaveHistoryValidator, validateRequest, getLeaveHistory);
+// Approve leave request
 leaveRoutes.patch("/:leaveId/approve", authenticate, reviewLeaveValidator, validateRequest, approveLeave);
+// Reject leave request
 leaveRoutes.patch("/:leaveId/reject", authenticate, reviewLeaveValidator, validateRequest, rejectLeave);
 
 export default leaveRoutes;
