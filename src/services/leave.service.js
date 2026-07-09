@@ -77,6 +77,10 @@ const applyForLeave = async ({ employeeId, leaveType, startDate, endDate, reason
 
   const normalizedStartDate = normalizeDate(startDate);
   const normalizedEndDate = normalizeDate(endDate);
+   
+
+
+
 
   if (normalizedEndDate < normalizedStartDate) {
     const error = new Error("End Date cannot be before Start Date");

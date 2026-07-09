@@ -49,16 +49,34 @@ export const initializeDatabase = () => {
             ON leave_requests(status);
     `;
 
+    const refreshTokenSql = `
+CREATE TABLE IF NOT EXISTS refresh_tokens (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id INTEGER NOT NULL,
+    token TEXT NOT NULL UNIQUE,
+    expires_at DATETIME NOT NULL,
+    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+);
+`;
+
     // Return a promise to allow async initialization handling
     return new Promise((resolve, reject) => {
-        db.exec(sql, (err) => {
+        db.run(sql, (err) => {
             if (err) {
                 console.error('Database initialization error:', err);
                 reject(err);
-            } else {
+            } 
+            db.run(refreshTokenSql, (err) => {
+                    if (err) {
+                        console.error('Refresh token database not initialized', err);
+                        reject(err);
+                    }          
+            
+            
                 console.log('Tables have been created if they do not exist.');
                 resolve();
-            }
+              });
         });
     });
 };
@@ -73,9 +91,17 @@ db.all(`SELECT * FROM users`, [], (err, rows) => {
 
 
 
+db.all(`SELECT * FROM leave_requests`, [], (err, rows) => {
+   if(err) {
+    console.error(err);
+    return;
+   }  
+   console.log("All existing users:", rows);
+});
 
 
 /*
+
 db.run(`DELETE FROM users`, (err, result) => {
      if(err) {
     console.error(err);

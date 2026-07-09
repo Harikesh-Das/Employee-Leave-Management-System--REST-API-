@@ -1,9 +1,27 @@
+import { resolve } from "dns";
 import db from "../config/db.js";
 
 const DEFAULT_BALANCES = {
   Casual: 12,
   Sick: 8,
   "Earned Leave": 18,
+};
+
+const checkduplication = (employeeId, startDate, endDate) => {
+  return new Promise((resolve, reject) => {
+    db.get(
+      `SELECT * FROM leave_requests 
+       WHERE employee_id = ? 
+       AND status IN ('Pending', 'Approved') 
+       AND start_date <= ? 
+       AND end_date >= ?`,
+       [employeeId, endDate, startDate], 
+       (err, row) => {
+          if (err) return reject(err);
+          resolve(row);
+       }
+    );
+  });
 };
 
 const findEmployeeById = (employeeId) => {
@@ -57,15 +75,25 @@ const getUsedLeaveDays = (employeeId, leaveType) => {
 
 const insertLeaveRequest = (employeeId, leaveType, startDate, endDate, totalDays, reason) => {
   return new Promise((resolve, reject) => {
-    db.run(
-      `INSERT INTO leave_requests (employee_id, leave_type, start_date, end_date, total_days, reason)
-       VALUES (?, ?, ?, ?, ?, ?)`,
-      [employeeId, leaveType, startDate, endDate, totalDays, reason],
-      function (err) {
-        if (err) return reject(err);
-        resolve(this.lastID);
-      }
-    );
+    checkduplication(employeeId, startDate, endDate)
+      .then(existingLeave => {
+        if (existingLeave) {
+          const err = new Error("Duplicate leave: The requested dates overlap with an existing leave.");
+          err.statusCode = 400;
+          return reject(err);
+        }
+        
+        db.run(
+          `INSERT INTO leave_requests (employee_id, leave_type, start_date, end_date, total_days, reason)
+           VALUES (?, ?, ?, ?, ?, ?)`,
+          [employeeId, leaveType, startDate, endDate, totalDays, reason],
+          function (err) {
+            if (err) return reject(err);
+            resolve(this.lastID);
+          }
+        );
+      })
+      .catch(reject);
   });
 };
 
