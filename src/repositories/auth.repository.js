@@ -5,7 +5,7 @@ const findUserByEmail = (email) => {
     // Return a promise that resolves with the user row or rejects on error
     return new Promise((resolve, reject) => {
         db.get(
-            "SELECT * FROM users WHERE email = ?",
+            `SELECT * FROM users WHERE email = ?`,
             [email],
             (err, row) => {
                 if (err) {

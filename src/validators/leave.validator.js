@@ -1,13 +1,7 @@
 import { body, param, checkExact } from "express-validator";
 
 const applyLeaveValidator = [
-   body("employeeId")
-      .trim()
-      .notEmpty()
-      .withMessage("employeeId is required")
-      .isAlphanumeric()
-      .withMessage("employeeId must be numeric"),
-
+   checkExact([
    body("leaveType")
       .trim()
       .notEmpty()
@@ -35,27 +29,23 @@ const applyLeaveValidator = [
       .withMessage("reason is required")
       .isString()
       .withMessage("reason must be string")
+   ])
 ];
 
 const cancelLeaveValidator = [
-   param("leaveId")
-      .notEmpty()
-      .withMessage("leaveId param is required")
-      .isNumeric()
-      .withMessage("leaveId must be numeric"),
-   body("employeeId")
-      .notEmpty()
-      .withMessage("employeeId is required")
-      .isNumeric()
-      .withMessage("employeeId must be numeric")
+   checkExact([
+
+      param("leaveId")
+         .notEmpty()
+         .withMessage("leaveId param is required")
+         .isNumeric()
+         .withMessage("leaveId must be numeric"),
+     
+   ])
 ];
 
 const leaveHistoryValidator = [
-   param("employeeId")
-      .notEmpty()
-      .withMessage("employeeId param is required")
-      .isNumeric()
-      .withMessage("employeeId must be numeric")
+ 
 ];
 
 const reviewLeaveValidator = [
@@ -64,11 +54,6 @@ const reviewLeaveValidator = [
       .withMessage("leaveId param is required")
       .isNumeric()
       .withMessage("leaveId must be numeric"),
-   body("managerId")
-      .notEmpty()
-      .withMessage("managerId is required")
-      .isNumeric()
-      .withMessage("managerId must be numeric"),
    body("managerComment")
       .optional()
       .isString()

@@ -118,6 +118,45 @@ const findLeaveHistory = (employeeId) => {
   });
 };
 
+const checkLeaveOverlap= (employeeId, newEndDate, newStartDate)=>{
+  return new Promise((resolve, reject)=>{
+    db.get(`
+      SELECT *
+      FROM leave_requests
+      WHERE employee_id = ?
+      AND status IN ('Pending', 'Approved')
+      AND (
+      start_date <= ?
+      AND end_date >= ?
+      )
+      LIMIT 1;`,
+    [employeeId,newEndDate,newStartDate],
+    (err,row)=>{
+      if (err) return reject(err);
+      resolve (row);
+    });
+  });
+};
+
+const checkDuplicateLeave= (leaveType,startDate,endDate)=>{
+  return new Promise ((resolve,reject)=>{
+    db.get(`
+      SELECT id
+      FROM leave_requests
+      WHERE employee_id = ?
+      AND leave_type = ?
+      AND start_date = ?
+      AND end_date = ?
+      AND status = 'Pending'
+      LIMIT 1;`,
+    [leaveType,startDate,endDate],
+  (err,row)=>{
+    if(err) return reject(err);
+    resolve (row);
+    });  
+  });
+};
+
 export {
   DEFAULT_BALANCES,
   findEmployeeById,
@@ -127,5 +166,7 @@ export {
   insertLeaveRequest,
   findLeaveById,
   updateLeaveStatus,
-  findLeaveHistory
+  findLeaveHistory,
+  checkLeaveOverlap,
+  checkDuplicateLeave
 };

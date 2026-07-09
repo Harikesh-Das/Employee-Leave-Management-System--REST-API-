@@ -6,7 +6,9 @@ import {
   insertLeaveRequest,
   findLeaveById,
   updateLeaveStatus,
-  findLeaveHistory
+  findLeaveHistory,
+  checkLeaveOverlap,
+  checkDuplicateLeave
 } from "../repositories/leave.repository.js";
 
 import { findUserById } from "../repositories/auth.repository.js";
@@ -58,9 +60,9 @@ const getBalanceSummary = async (employeeId, leaveType) => {
 };
 
 // Employee Apply for leave
-const applyForLeave = async ({ employeeId, leaveType, startDate, endDate, reason }) => {
-  if (!employeeId || !leaveType || !startDate || !endDate) {
-    const error = new Error("employeeId, leaveType, startDate and endDate are required");
+const applyForLeave = async ({employeeId,leaveType,startDate,endDate,reason }) => {
+  if ( !leaveType || !startDate || !endDate) {
+    const error = new Error(" leaveType, startDate and endDate are required");
     error.statusCode = 400;
     throw error;
   }
@@ -89,9 +91,24 @@ const applyForLeave = async ({ employeeId, leaveType, startDate, endDate, reason
 
   await ensureEmployeeExists(employeeId);
 
+  const overlap= await checkLeaveOverlap(employeeId,normalizedStartDate,normalizedEndDate)
+  if (overlap){
+    const error= new Error("Employee has an overlapping leave request.");
+    error.statusCode=400;
+    throw error;
+  }
+  
+  const duplicate= await checkDuplicateLeave(leaveType,normalizedStartDate,normalizedEndDate)
+  if ( duplicate){
+    const error=new Error (" Duplicate leave request exits");
+    error.statusCode=400;
+    throw error;
+    
+  }
+
   const totalDays = getInclusiveDayCount(normalizedStartDate, normalizedEndDate);
   
-  const balance = await getBalanceSummary(employeeId, leaveType);
+  const balance = await getBalanceSummary(employeeId,leaveType);
 
   if (balance.remaining < totalDays) {
     const error = new Error("Insufficient leave balance");
@@ -118,7 +135,7 @@ const applyForLeave = async ({ employeeId, leaveType, startDate, endDate, reason
 // Employee cancels applied leave
 const cancelEmployeeLeave = async (leaveId, employeeId) => {
   if (!leaveId || !employeeId) {
-    const error = new Error("leaveId param and employeeId in body are required");
+    const error = new Error("leaveId and authenticated employee are required");
     error.statusCode = 400;
     throw error;
   }
@@ -143,11 +160,9 @@ const cancelEmployeeLeave = async (leaveId, employeeId) => {
   }
 
   await updateLeaveStatus(leaveId, "Cancelled");
-  const updatedLeave = await findLeaveById(leaveId);
 
-  return updatedLeave;
+  return await findLeaveById(leaveId);
 };
-
 
 // View leave history
 const fetchLeaveHistory = async (employeeId) => {
@@ -173,8 +188,8 @@ const fetchLeaveHistory = async (employeeId) => {
 
 // Review Leave
 const processLeaveReview = async (leaveId, managerId, managerComment, nextStatus) => {
-  if (!leaveId || !managerId) {
-    const error = new Error("leaveId param and managerId in body are required");
+  if (!leaveId) {
+    const error = new Error("leaveId params in body are required");
     error.statusCode = 400;
     throw error;
   }
@@ -194,14 +209,7 @@ const processLeaveReview = async (leaveId, managerId, managerComment, nextStatus
     throw error;
   }
 
-  if (nextStatus === "Approved") {
-    const balance = await getBalanceSummary(leave.employee_id, leave.leave_type);
-    if (balance.remaining < leave.total_days) {
-      const error = new Error("Insufficient leave balance at approval time");
-      error.statusCode = 400;
-      throw error;
-    }
-  }
+
 
   await updateLeaveStatus(leaveId, nextStatus, managerId, managerComment);
   const updatedLeave = await findLeaveById(leaveId);

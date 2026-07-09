@@ -1,5 +1,5 @@
 import express from "express";
-
+import authenticate from "../middlewares/authenticate.js";
 import {
   applyLeave,
   cancelLeave,
@@ -17,10 +17,10 @@ import {
 
 const leaveRoutes = express.Router();
 
-leaveRoutes.post("/apply", applyLeaveValidator, validateRequest, applyLeave);
-leaveRoutes.patch("/:leaveId/cancel", cancelLeaveValidator, validateRequest, cancelLeave);
-leaveRoutes.get("/history/:employeeId", leaveHistoryValidator, validateRequest, getLeaveHistory);
-leaveRoutes.patch("/:leaveId/approve", reviewLeaveValidator, validateRequest, approveLeave);
-leaveRoutes.patch("/:leaveId/reject", reviewLeaveValidator, validateRequest, rejectLeave);
+leaveRoutes.post("/apply", authenticate,applyLeaveValidator, validateRequest, applyLeave);
+leaveRoutes.patch("/:leaveId/cancel", authenticate,cancelLeaveValidator, validateRequest, cancelLeave);
+leaveRoutes.get("/history", authenticate, leaveHistoryValidator, validateRequest, getLeaveHistory);
+leaveRoutes.patch("/:leaveId/approve", authenticate, reviewLeaveValidator, validateRequest, approveLeave);
+leaveRoutes.patch("/:leaveId/reject", authenticate, reviewLeaveValidator, validateRequest, rejectLeave);
 
 export default leaveRoutes;
