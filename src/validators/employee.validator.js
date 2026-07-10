@@ -1,0 +1,14 @@
+import { body } from 'express-validator';
+
+
+// File upload validation rules
+export function validateImage(req, res, next) {
+  if (!req.file) {
+    return res.status(400).json({
+      success: false,
+      message: "Image is required",
+    });
+  }
+
+  next();
+}

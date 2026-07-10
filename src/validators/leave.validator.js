@@ -8,7 +8,7 @@ const applyLeaveValidator = [
       .notEmpty()
       .withMessage("leave type is required")
       .isString()
-      .withMessage("leavetype must be string"),
+      .withMessage("leave type must be string"),
 
    body("startDate")
       .trim()
