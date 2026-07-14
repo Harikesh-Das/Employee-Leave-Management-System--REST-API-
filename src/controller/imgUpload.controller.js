@@ -1,6 +1,6 @@
 import { asyncHandler } from '../utils/asyncHandler.js';
 import apiResponse from '../utils/apiResponse.js';
-import { processImageUpload } from '../services/employee.service.js';
+import { processImageUpload } from '../services/imgUpload.services.js';
 
 // Upload Image
 const uploadEmployeeImage = asyncHandler(async (req, res) => {

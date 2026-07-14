@@ -1,8 +1,8 @@
 import express from "express";
-import { uploadEmployeeImage } from "../controller/employee.controller.js";
-import { upload, renameEmployeeImage } from "../middlewares/multer.employeeimage.js";
+import { uploadEmployeeImage } from "../controller/imgUpload.controller.js";
+import { upload, renameEmployeeImage } from "../middlewares/multerImgUpload.js";
 import authenticate from "../middlewares/authenticate.js";
-import { validateImage} from "../validators/employee.validator.js";
+import { validateImage} from "../validators/imgUpload.validator.js";
 
 const imgRoutes = express.Router();
 

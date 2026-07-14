@@ -3,6 +3,7 @@ import db from './db.js';
 
 //Creating a table if it doesn't exist in the first place
 export const initializeDatabase = () => {
+    // SQL to create users table
     const userSql = `
         CREATE TABLE IF NOT EXISTS users (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -17,6 +18,7 @@ export const initializeDatabase = () => {
         )
     `;
 
+    // SQL to create refresh tokens table
     const refreshTokenSql = `
 CREATE TABLE IF NOT EXISTS refresh_tokens (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -28,6 +30,7 @@ CREATE TABLE IF NOT EXISTS refresh_tokens (
 );
 `;
 
+    // SQL to create leave requests table
 const leavesSql=`
  CREATE TABLE IF NOT EXISTS leave_requests (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -45,6 +48,8 @@ const leavesSql=`
             action_at TEXT,
             cancelled_at TEXT
         );`
+
+    // SQL to create leave balances table and indexes
 const leaveBalanceSql=`
  CREATE TABLE IF NOT EXISTS leave_balances (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
